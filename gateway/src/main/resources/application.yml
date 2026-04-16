@@ -1,0 +1,26 @@
+server:
+  port: 7573
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+      routes:
+        - id: uaa-route
+          uri: lb://uaa
+          predicates:
+            - Path=/uaa/**
+        - id: product-route
+          uri: lb://product
+          predicates:
+            - Path=/product/**
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
