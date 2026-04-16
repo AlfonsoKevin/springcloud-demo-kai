@@ -1,4 +1,4 @@
-## 20260416-微服务DEMO编写
+# 20260416-微服务DEMO编写
 
 ### 涉及项目
 
@@ -238,4 +238,6 @@ userPassword: ldap_adm_1
 
 1.依次启动 DiscoveryApplication、UaaApplication、ProductApplication、GatewayApplication 服务。
 
-2.我使用了本地的MySQL环境，需要初始化表结构
+2.我使用了本地的MySQL环境，需要初始化表结构，或者是改为云服务器
+
+3.前端页面在front文件夹下，访问index.html即可
