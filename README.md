@@ -71,6 +71,8 @@ MySQL 8
 - `ldap_editor_1` / `ldap_editor_1` (EDITOR)
 - `ldap_adm_1` / `ldap_adm_1` (PRODUCT_ADMIN)
 
+提供两种登陆方式，LDAP登录和普通用户登录。(docker部署了LDAP，目前可以测试)
+
 ## 4.CURL 测试命令
 
 使用postman进行测试：
@@ -190,6 +192,43 @@ CREATE TABLE IF NOT EXISTS `product` (
   `name` varchar(255) DEFAULT NULL COMMENT '产品名称',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='产品信息表';
+
+```
+
+LDAP测试数据 init.Idif
+
+```bash
+# 定义基础的组织单元 (Organizational Unit)
+dn: ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+ou: users
+
+# 添加 普通用户: ldap_user_1
+dn: uid=ldap_user_1,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: top
+uid: ldap_user_1
+cn: ldap_user_1
+sn: user_1
+userPassword: ldap_user_1
+
+# 添加 EDITOR 用户: ldap_editor_1
+dn: uid=ldap_editor_1,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: top
+uid: ldap_editor_1
+cn: ldap_editor_1
+sn: editor_1
+userPassword: ldap_editor_1
+
+# 添加 PRODUCT_ADMIN 用户: ldap_adm_1
+dn: uid=ldap_adm_1,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: top
+uid: ldap_adm_1
+cn: ldap_adm_1
+sn: adm_1
+userPassword: ldap_adm_1
 
 ```
 

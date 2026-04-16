@@ -12,6 +12,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  ldap:
+    urls: ldap://162.254.85.36:389
+    base: dc=example,dc=com
+    username: cn=admin,dc=example,dc=com
+    password: adminpassword
   security:
     oauth2:
       client:

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>微服务 DEMO</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2, h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .user-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-small {
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .panel {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background: #eee;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            background: #fff;
+            border-bottom: 1px solid #fff;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="authSection">
+        <div class="header">
+            <h1>系统登录 / 注册</h1>
+        </div>
+
+        <div id="authMessage" class="message"></div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">登录</div>
+            <div class="tab" onclick="switchTab('register')">注册</div>
+        </div>
+
+        <!-- 登录表单 -->
+        <div id="loginPanel" class="panel">
+            <h3>使用账号密码登录</h3>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label>登录方式</label>
+                    <label style="display: inline-block; font-weight: normal; margin-right: 15px;">
+                        <input type="radio" name="loginType" value="db" checked> 数据库登录
+                    </label>
+                    <label style="display: inline-block; font-weight: normal;">
+                        <input type="radio" name="loginType" value="ldap"> LDAP 登录
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label for="loginUsername">用户名</label>
+                    <input type="text" id="loginUsername" required placeholder="例如: adm_1, editor_1, user_1">
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码</label>
+                    <input type="password" id="loginPassword" required placeholder="对应密码">
+                </div>
+                <button type="submit" class="btn">登 录</button>
+            </form>
+
+            <!--            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd;">-->
+            <!--                <h3>使用 GitHub OAuth2 登录</h3>-->
+            <!--                <a href="http://localhost:7573/uaa/oauth2/authorization/github" class="btn" style="text-decoration: none; display: inline-block;">GitHub 登录</a>-->
+            <!--            </div>-->
+        </div>
+
+        <!-- 注册表单 -->
+        <div id="registerPanel" class="panel hidden">
+            <h3>注册新账号</h3>
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="regUsername">用户名</label>
+                    <input type="text" id="regUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">密码</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">邮箱</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <button type="submit" class="btn">注 册</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="appSection" class="hidden">
+        <div class="header">
+            <h1>产品管理系统</h1>
+            <div class="user-info">
+                当前用户: <strong id="currentUserSpan"></strong> |
+                角色: <strong id="currentRolesSpan"></strong>
+                <button class="btn btn-small btn-danger" onclick="logout()" style="margin-left: 10px;">退出登录</button>
+            </div>
+        </div>
+
+        <div id="appMessage" class="message"></div>
+
+        <!-- 添加产品区域 (需要 EDITOR 或 ADMIN 权限) -->
+        <div id="addProductPanel" class="panel hidden">
+            <h3>添加新产品</h3>
+            <form id="addProductForm" onsubmit="handleAddProduct(event)"
+                  style="display: flex; gap: 10px; align-items: flex-end;">
+                <div class="form-group" style="margin-bottom: 0; flex: 1;">
+                    <label for="productName">产品名称</label>
+                    <input type="text" id="productName" required placeholder="输入产品名称...">
+                </div>
+                <button type="submit" class="btn">添 加</button>
+            </form>
+        </div>
+
+        <!-- 产品列表 -->
+        <div class="panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>产品列表</h3>
+                <button class="btn btn-small" onclick="loadProducts()">刷新列表</button>
+            </div>
+
+            <table id="productTable">
+                <thead>
+                <tr>
+                    <th width="10%">ID</th>
+                    <th width="60%">产品名称</th>
+                    <th width="30%">操作</th>
+                </tr>
+                </thead>
+                <tbody id="productTableBody">
+                <tr>
+                    <td colspan="3" style="text-align: center;">加载中...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:7573';
+    let currentToken = null;
+    let currentRoles = [];
+
+    // 初始化检查 Token
+    window.onload = function () {
+        const token = localStorage.getItem('access_token');
+        if (token) {
+            currentToken = token;
+            parseTokenAndSetup(token);
+        }
+    };
+
+    function showMessage(elementId, type, text) {
+        const el = document.getElementById(elementId);
+        el.className = `message ${type}`;
+        el.innerText = text;
+        setTimeout(() => {
+            el.className = 'message hidden';
+        }, 5000);
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+        if (tab === 'login') {
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.getElementById('loginPanel').classList.remove('hidden');
+            document.getElementById('registerPanel').classList.add('hidden');
+        } else {
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('registerPanel').classList.remove('hidden');
+        }
+    }
+
+    // 处理登录
+    async function handleLogin(e) {
+        e.preventDefault();
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        const loginType = document.querySelector('input[name="loginType"]:checked').value;
+
+        try {
+            const response = await fetch(`${API_BASE}/uaa/token`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    grantType: 'password',
+                    loginType: loginType,
+                    username: username,
+                    password: password
+                })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                currentToken = data.access_token;
+                localStorage.setItem('access_token', currentToken);
+                parseTokenAndSetup(currentToken);
+            } else {
+                showMessage('authMessage', 'error', '登录失败，请检查用户名和密码');
+            }
+        } catch (error) {
+            showMessage('authMessage', 'error', '网络请求失败: ' + error.message);
+        }
+    }
+
+    // 处理注册
+    async function handleRegister(e) {
+        e.preventDefault();
+        const username = document.getElementById('regUsername').value;
+        const password = document.getElementById('regPassword').value;
+        const email = document.getElementById('regEmail').value;
+
+        try {
+            const response = await fetch(`${API_BASE}/uaa/register`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    username: username,
+                    password: password,
+                    email: email,
+                    roles: "USER"
+                })
+            });
+
+            if (response.ok) {
+                showMessage('authMessage', 'success', '注册成功！请切换到登录面板进行登录。');
+                document.getElementById('registerForm').reset();
+                switchTab('login');
+                document.getElementById('loginUsername').value = username;
+            } else {
+                const errText = await response.text();
+                showMessage('authMessage', 'error', '注册失败: ' + errText);
+            }
+        } catch (error) {
+            showMessage('authMessage', 'error', '网络请求失败: ' + error.message);
+        }
+    }
+
+    // 解析 JWT 并设置界面
+    function parseTokenAndSetup(token) {
+        try {
+            const payloadBase64 = token.split('.')[1];
+            const payload = JSON.parse(atob(payloadBase64));
+
+            document.getElementById('currentUserSpan').innerText = payload.sub;
+
+            // 解析角色
+            currentRoles = payload.roles.split(',');
+            document.getElementById('currentRolesSpan').innerText = currentRoles.join(', ');
+
+            // 切换视图
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('appSection').classList.remove('hidden');
+
+            // 权限控制：只有 EDITOR 或 PRODUCT_ADMIN 可以看到添加产品的表单
+            if (currentRoles.includes('EDITOR') || currentRoles.includes('PRODUCT_ADMIN')) {
+                document.getElementById('addProductPanel').classList.remove('hidden');
+            } else {
+                document.getElementById('addProductPanel').classList.add('hidden');
+            }
+
+            // 加载产品列表
+            loadProducts();
+        } catch (e) {
+            console.error("Token 解析失败", e);
+            logout();
+        }
+    }
+
+    // 退出登录
+    function logout() {
+        localStorage.removeItem('access_token');
+        currentToken = null;
+        currentRoles = [];
+        document.getElementById('authSection').classList.remove('hidden');
+        document.getElementById('appSection').classList.add('hidden');
+        document.getElementById('loginPassword').value = '';
+    }
+
+    // 鉴权请求封装
+    async function fetchWithAuth(url, options = {}) {
+        if (!options.headers) options.headers = {};
+        options.headers['Authorization'] = `Bearer ${currentToken}`;
+
+        const response = await fetch(url, options);
+        if (response.status === 401 || response.status === 403) {
+            showMessage('appMessage', 'error', '权限不足或登录已过期，请重新登录');
+            if (response.status === 401) logout();
+            throw new Error('Unauthorized');
+        }
+        return response;
+    }
+
+    // 加载产品列表
+    async function loadProducts() {
+        try {
+            const response = await fetchWithAuth(`${API_BASE}/product`);
+            const products = await response.json();
+
+            const tbody = document.getElementById('productTableBody');
+            tbody.innerHTML = '';
+
+            if (products.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">暂无产品数据</td></tr>';
+                return;
+            }
+
+            const canEdit = currentRoles.includes('EDITOR') || currentRoles.includes('PRODUCT_ADMIN');
+
+            products.forEach(p => {
+                const tr = document.createElement('tr');
+
+                let actionsHtml = '';
+                if (canEdit) {
+                    actionsHtml = `
+                        <button class="btn btn-small" onclick="handleModifyProduct(${p.id}, '${p.name}')">修改</button>
+                        <button class="btn btn-small btn-danger" onclick="handleDeleteProduct(${p.id})">删除</button>
+                    `;
+                } else {
+                    actionsHtml = '<span style="color:#999;font-size:12px;">无操作权限</span>';
+                }
+
+                tr.innerHTML = `
+                    <td>${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${actionsHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // 添加产品
+    async function handleAddProduct(e) {
+        e.preventDefault();
+        const nameInput = document.getElementById('productName');
+        const name = nameInput.value;
+
+        try {
+            const response = await fetchWithAuth(`${API_BASE}/product`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: name})
+            });
+
+            if (response.ok) {
+                showMessage('appMessage', 'success', '产品添加成功！');
+                nameInput.value = '';
+                loadProducts();
+            } else {
+                showMessage('appMessage', 'error', '添加失败');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // 删除产品
+    async function handleDeleteProduct(id) {
+        if (!confirm(`确定要删除 ID 为 ${id} 的产品吗？`)) return;
+
+        try {
+            const response = await fetchWithAuth(`${API_BASE}/product/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                showMessage('appMessage', 'success', '产品删除成功！');
+                loadProducts();
+            } else {
+                showMessage('appMessage', 'error', '删除失败');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    // 修改产品
+    async function handleModifyProduct(id, currentName) {
+        const newName = prompt(`修改产品 (ID: ${id}) 的名称:`, currentName);
+        if (newName === null || newName.trim() === '' || newName === currentName) return;
+
+        try {
+            const response = await fetchWithAuth(`${API_BASE}/product/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: newName.trim()})
+            });
+
+            if (response.ok) {
+                showMessage('appMessage', 'success', '产品修改成功！');
+                loadProducts();
+            } else {
+                showMessage('appMessage', 'error', '修改失败');
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+</script>
+</body>
+</html>

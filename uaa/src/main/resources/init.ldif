@@ -1,0 +1,31 @@
+# 定义基础的组织单元 (Organizational Unit)
+dn: ou=users,dc=example,dc=com
+objectClass: organizationalUnit
+ou: users
+
+# 添加 普通用户: ldap_user_1
+dn: uid=ldap_user_1,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: top
+uid: ldap_user_1
+cn: ldap_user_1
+sn: user_1
+userPassword: ldap_user_1
+
+# 添加 EDITOR 用户: ldap_editor_1
+dn: uid=ldap_editor_1,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: top
+uid: ldap_editor_1
+cn: ldap_editor_1
+sn: editor_1
+userPassword: ldap_editor_1
+
+# 添加 PRODUCT_ADMIN 用户: ldap_adm_1
+dn: uid=ldap_adm_1,ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: top
+uid: ldap_adm_1
+cn: ldap_adm_1
+sn: adm_1
+userPassword: ldap_adm_1
